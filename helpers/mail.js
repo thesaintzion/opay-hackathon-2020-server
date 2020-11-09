@@ -4,37 +4,41 @@ const nodemailer = require('nodemailer');
 
 module.exports = {
     sendMail: (data) => {
+        console.log('The data', data)
         let template;
         let mailOptions;
         template = `
         <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
         <head>
+        
         </head>
-    
         <div style="background: #fff; overflow: hidden;">
 
              <Header style="padding: 10px; background-color: #e40521; color: #fff">
-                <h5 style="margin-bottom: 0">Saint Stephen</h5>
+                <h1 style="margin-bottom: 0">Saint Stephen</h1>
             </header>
 
                 <div style="padding: 20px 10px 10px 10px; background-color: #ffe9e9;">
-               <strong>Dear,</strong>
-               
-                <p>I'm are using this medium to say thank you for stopping by.... </p>
+              
+                <strong>Hello ${data.name},</strong>
+            
+                <P>Thank you for stopping by. Your message was sent successfully and I will get back to you soon.</P>
+
+                <P>You can get back to me by replaying to this mail or whatsapp me on: <strong>+2348061578814</strong></P>
 
                 </div>   
               </div>     
         </html>`;
-        let from = 'noreply@aimart.herokuapp.com';
+        let from = 'noreply@saint-portfolio.herokuapp.com';
         if (process.env.NODE_ENV != 'production') {
-            from = `noreply@localhost:4200`;
+            from = `noreply@localhost:4500`;
         }
         mailOptions = {
-            from: `Saint Stephen`,
-            to: 'faithrejoice777@gmail.com',
+            from: `"St. Stephen | full-stack developer" <${from}/>`,
+            to: data.email,
             subject: `Thanks for stopping by`,
-            text: '- Welcome',
+            // text: '- Welcome',
             html: template,
             headers: {
                 priority: 'high'
