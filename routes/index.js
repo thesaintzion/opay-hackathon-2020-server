@@ -17,7 +17,6 @@ module.exports = (app) => {
         });
     });
 
-
     // Get messages
     app.post('/api/message/post', (req, res) => {
         const { name, email, message } = req.body;
