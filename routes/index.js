@@ -3,13 +3,12 @@ const Message = require('../database/models/messages');
 const { sendMail } = require('../helpers/mail');
 let base_api = 'http://sandbox-cashierapi.opayweb.com/api/v3';
 const axios = require('axios');
-const { makePayment, resolveUserBank, getCountries, getBanks } = require('../middleware');
+const { makePayment, resolveUserBank, getCountries, getBanks, doTransfer } = require('../middleware');
 
 module.exports = (app) => {
     // make payment
     app.post('/api/product/pay', makePayment, (req, res) => {
-
-        // Probably save details to database or something...
+        // we could probably save details to database or something else...
         let data = {
             cashierUrl: req.cashierUrl,
             orderNo: req.orderNo,
@@ -31,21 +30,19 @@ module.exports = (app) => {
         res.status(200).json({ message: 'Got banks', banks: req.banks });
     });
 
-    app.post('/api/transfer', resolveUserBank, (req, res) => {
-        res.status(200).json({ message: 'Successful transfer', accountNo: req.accountNo, accountName: req.accountName });
+    // Make transfer
+    app.post('/api/transfer', doTransfer, (req, res) => {
+        res.status(200).json({ message: 'Successful transfer' });
     });
 
+    // validate bank details
     app.post('/api/validate-bank-account', resolveUserBank, (req, res) => {
         res.status(200).json({ message: 'Got bank', accountNo: req.accountNo, accountName: req.accountName });
     });
 
-    // Get messages
+    // Opay callback
     app.get('/api/products/opay-callback', (req, res) => {
-        console.log('The callback', 'Reg:', req.body);
         res.status(200).json({ message: 'Successful' });
     });
-
-
-
 
 }

@@ -3,6 +3,7 @@ const axios = require('axios');
 const RequestIp = require('@supercharge/request-ip');
 
 module.exports = {
+    // Make payment
     makePayment: (req, res, next) => {
         try {
             const ip = RequestIp.getClientIp(req);
@@ -10,9 +11,6 @@ module.exports = {
             if (!name || !price) {
                 res.status(400).json({ message: 'Oops..!! Price and name are required' });
             } else {
-
-
-
                 let callbackUrl = 'http://opay-hackathon-2020.herokuapp.com/api/products/opay-callback';
                 let returnUrl = 'https://opay-hackathon-2020.herokuapp.com/page/products';
 
@@ -67,12 +65,7 @@ module.exports = {
                     console.log('Error ', err);
                     res.status(400).json({ message: 'Oops..!! Something went wrong' });
                 })
-
-
             }
-
-
-
 
         } catch (err) {
             console.log('Error during payment init:', err);
@@ -80,6 +73,7 @@ module.exports = {
         }
     },
 
+    // Validate bank details
     resolveUserBank: (req, res, next) => {
         try {
             const { bankCode, bankAccountNo, countryCode } = req.body;
@@ -123,6 +117,65 @@ module.exports = {
         }
     },
 
+
+    // Make transfers
+    doTransfer: (req, res, next) => {
+        const { amount, country, currency, bankAccountNumber, bankCode, name, reason } = req.body;
+        if (!currency || !country || !amount || !bankAccountNumber || !bankCode || !name || !reason) {
+            res.status(400).json({ message: 'Oops..!! currency and country is required' });
+        } else {
+            try {
+                let data = {
+                    "amount": amount * 100,
+                    "country": country,
+                    "currency": currency,
+                    "reason": reason,
+                    "receiver": {
+                        "bankAccountNumber": "3145549577",
+                        "bankCode": bankCode,
+                        "name": name,
+                    },
+                    // "reference": `ref-${Math.ceil(Math.random() * 10e13)}`,
+                }
+
+                console.log('Data', data);
+
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                        'MerchantId': process.env.OPAY_MID,
+                        'Authorization': ['Bearer ', process.env.OPAY_SECRET_KEY].join('')
+                    },
+                    url: `${base_api}/transfer/toBank`,
+                    data: data,
+                };
+
+
+                axios(options).then(res => {
+                    if (res.status.toString() === '200') {
+
+                        console.log('RES', res.data);
+
+                        next();
+                    } else {
+                        console.log('No RES', res.data);
+                        res.status(400).json({ message: 'Oops..!! Something went wrong' });
+                    }
+                }).catch(err => {
+                    console.log('Error getting banks', err.response.data);
+                    res.status(400).json({ message: 'Oops..!! Something went wrong' });
+                })
+
+            } catch (err) {
+                console.log('Error during payment init:', err);
+                res.status(400).json({ message: 'Oops..!! Something went wrong' });
+            }
+        }
+
+    },
+
+    // Get countries
     getCountries: (req, res, next) => {
         try {
             const options = {
@@ -140,7 +193,7 @@ module.exports = {
                     next();
                 }
             }).catch(err => {
-                console.log('Error getting countries', err.response.data);
+                console.log('Error getting countries', err.response);
                 res.status(400).json({ message: 'Oops..!! Something went wrong' });
             })
 
@@ -150,6 +203,8 @@ module.exports = {
         }
     },
 
+
+    // Get banks
     getBanks: (req, res, next) => {
         const { countryCode } = req.query;
         if (!countryCode || countryCode == '') {
