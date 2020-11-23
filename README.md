@@ -1,14 +1,13 @@
-<h1>Opay Hackathon 2020</h1> 
+# Opay Hackathon 2020 nodejs. This is the backend part of the full project
 
-<h3>View the live projects</h3>
+# The Angular client
+https://github.com/thesaintzion/opay-hackathon-2020-client
+
+# View the live project
 https://opay-hackathon-2020.herokuapp.com
 
-<h3></h3>
-https://opay-hackathon-2020.herokuapp.com
 
-<p>Endpoints</p>
-/routes/index.js
-
+# Endpoints
 
 <li>
 /api/products/pay [POST]
