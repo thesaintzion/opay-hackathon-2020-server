@@ -6,6 +6,7 @@ const axios = require('axios');
 const { makePayment, resolveUserBank, getCountries, getBanks, doTransfer } = require('../middleware');
 
 module.exports = (app) => {
+
     // make payment
     app.post('/api/product/pay', makePayment, (req, res) => {
         // we could probably save details to database or something else...
@@ -23,7 +24,6 @@ module.exports = (app) => {
     app.get('/api/countries', getCountries, (req, res) => {
         res.status(200).json({ message: 'Got countries', countries: req.countries });
     });
-
 
     // get banks
     app.get('/api/banks', getBanks, (req, res) => {
